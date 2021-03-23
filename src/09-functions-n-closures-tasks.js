@@ -170,6 +170,7 @@ function retry(fn, attempts) {
  */
 function logger(/* func, logFunc */) {
   throw new Error('Not implemented');
+  // Linter gives warning in case of '...args' use and throws in case of 'arguments'
   // return function (...args) {
   //   const argString = args.map((a) => JSON.stringify(a)).join(',');
   //   logFunc(`${func.name}(${argString}) starts`);
@@ -193,8 +194,9 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  // throw new Error('Not implemented');
+  return fn.bind(null, ...args1);
 }
 
 
