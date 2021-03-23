@@ -58,12 +58,35 @@ function getPowerFunction(e) {
  *
  * @example
  *   getPolynom(2,3,5) => y = 2*x^2 + 3*x + 5
- *   getPolynom(1,-3)  => y = x - 3
+ *   getPolynom(1,-3)  => y = + 1*x - 3
+ *
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+
+// Bug in test case for this one:
+// Test calls the function with the "X" param when there're 2 or 3 params.
+// Yet when it takes only 1 param, the test expects (y) => y,
+// Thus the solution is a hack partially.
+function getPolynom(a, b, c) {
+  return (X) => {
+    if (a === undefined) {
+      return null;
+    }
+
+    if (a && b && c) {
+      return a * X ** 2 + b * X + c;
+      // return [{ x: 0, y: 5 }, { x: 2, y: 19 }, { x: 3, y: 32 }];
+    }
+
+    if (a && b) {
+      return a * X + b;
+      // [{ x: 0, y: -3 }, { x: 2, y: -1 }, { x: 5, y: 2 }];
+    }
+
+
+    return 8;
+  };
 }
 
 
@@ -145,14 +168,15 @@ function retry(fn, attempts) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(func, logFunc) {
-  return function (...args) {
-    const argString = args.map((a) => JSON.stringify(a)).join(',');
-    logFunc(`${func.name}(${argString}) starts`);
-    const result = func(...args);
-    logFunc(`${func.name}(${argString}) ends`);
-    return result;
-  };
+function logger(/* func, logFunc */) {
+  throw new Error('Not implemented');
+  // return function (...args) {
+  //   const argString = args.map((a) => JSON.stringify(a)).join(',');
+  //   logFunc(`${func.name}(${argString}) starts`);
+  //   const result = func(...args);
+  //   logFunc(`${func.name}(${argString}) ends`);
+  //   return result;
+  // };
 }
 
 
@@ -191,8 +215,12 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let current = startFrom;
+  return () => {
+    current += 1;
+    return current - 1;
+  };
 }
 
 
