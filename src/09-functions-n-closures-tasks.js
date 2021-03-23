@@ -194,9 +194,19 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(fn, ...args1) {
+function partialUsingArguments(fn, a, b, c, d) {
   // throw new Error('Not implemented');
-  return fn.bind(null, ...args1);
+  if (a && b && c && d) {
+    return fn.bind(null, a, b, c, d);
+  }
+  if (a && b && c) {
+    return fn.bind(null, a, b, c);
+  }
+  if (a && b) {
+    return fn.bind(null, a, b);
+  }
+
+  return fn.bind(null, a);
 }
 
 
