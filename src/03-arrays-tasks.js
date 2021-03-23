@@ -238,8 +238,12 @@ function toArrayOfSquares(arr) {
  *   [ 0, 0, 0, 0, 0]         => [ 0, 0, 0, 0, 0]
  *   [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] => [ 1, 3, 6, 10, 15, 21, 28, 36, 45, 55 ]
  */
-function getMovingSum(/* arr */) {
-  throw new Error('Not implemented');
+function getMovingSum(arr) {
+  let prevVal = 0;
+  return arr.map((val) => {
+    prevVal = val + prevVal;
+    return prevVal;
+  });
 }
 
 /**
@@ -549,8 +553,15 @@ function distinct(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  return array.reduce((acc, object) => {
+    const key = keySelector(object);
+    const value = valueSelector(object);
+    const previousValues = acc.get(key) || [];
+    previousValues.push(value);
+    acc.set(key, previousValues);
+    return acc;
+  }, new Map());
 }
 
 
@@ -567,8 +578,8 @@ function group(/* array, keySelector, valueSelector */) {
  *   [[1, 2], [3, 4], [5, 6]], (x) => x     =>   [ 1, 2, 3, 4, 5, 6 ]
  *   ['one','two','three'], x=>x.split('')  =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
-function selectMany(/* arr, childrenSelector */) {
-  throw new Error('Not implemented');
+function selectMany(arr, childrenSelector) {
+  return arr.reduce((acc, item) => acc.concat(childrenSelector(item)), []);
 }
 
 
@@ -584,8 +595,8 @@ function selectMany(/* arr, childrenSelector */) {
  *   ['one','two','three'], [2]       => 'three'  (arr[2])
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
-function getElementByIndexes(/* arr, indexes */) {
-  throw new Error('Not implemented');
+function getElementByIndexes(arr, indexes) {
+  return indexes.reduce((acc, itemIndex) => acc[itemIndex], arr);
 }
 
 
@@ -607,8 +618,15 @@ function getElementByIndexes(/* arr, indexes */) {
  *   [ 1, 2, 3, 4, 5, 6, 7, 8 ]   =>  [ 5, 6, 7, 8, 1, 2, 3, 4 ]
  *
  */
-function swapHeadAndTail(/* arr */) {
-  throw new Error('Not implemented');
+function swapHeadAndTail(arr) {
+  if (arr.length === 1) {
+    return arr;
+  }
+  const half = arr.length / 2;
+  const head = arr.slice(0, Math.floor(half));
+  const tail = arr.slice(Math.ceil(half), arr.length);
+  const mid = arr.slice(Math.floor(half), Math.ceil(half));
+  return tail.concat(mid.concat(head));
 }
 
 
