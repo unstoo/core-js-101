@@ -168,16 +168,16 @@ function retry(fn, attempts) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  // throw new Error('Not implemented');
   // Linter gives warning in case of '...args' use and throws in case of 'arguments'
-  // return function (...args) {
-  //   const argString = args.map((a) => JSON.stringify(a)).join(',');
-  //   logFunc(`${func.name}(${argString}) starts`);
-  //   const result = func(...args);
-  //   logFunc(`${func.name}(${argString}) ends`);
-  //   return result;
-  // };
+  return function funcLogger(...args) {
+    const argString = args.map((a) => JSON.stringify(a)).join(',');
+    logFunc(`${func.name}(${argString}) starts`);
+    const result = func(...args);
+    logFunc(`${func.name}(${argString}) ends`);
+    return result;
+  };
 }
 
 
