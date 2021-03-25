@@ -325,8 +325,26 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const nEven = String(ccn).length % 2 === 0;
+  return String(ccn)
+    .split('')
+    .map(Number)
+    .map((n, i) => {
+      if ((nEven && i % 2 !== 0) || (!nEven && i % 2 === 0)) {
+        return n;
+      }
+
+      const dbl = n * 2;
+      if (dbl < 10) {
+        return dbl;
+      }
+
+      // const firstDigit = Number.parseInt(dbl / 10, 10);
+      // const secondDigit = dbl % 10;
+      return dbl - 9;
+    })
+    .reduce((acc, n) => acc + n, 0) % 10 === 0;
 }
 
 /**
@@ -378,8 +396,40 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  if (str === '') {
+    return true;
+  }
+
+  const stack = [];
+  const left = ['[', '(', '{', '<'];
+  const right = [']', ')', '}', '>'];
+  const len = str.length;
+  for (let i = 0; i < len; i += 1) {
+    const bracket = str[i];
+    const leftIndex = left.indexOf(bracket);
+    const rightIndex = right.indexOf(bracket);
+    // Opening bracket
+    if (leftIndex > -1) {
+      stack.push(bracket);
+    } else {
+    // Closing bracket
+      // Nothing to close
+      if (stack.length === 0) {
+        return false;
+      }
+      // Get previous bracket, it has to be an opening
+      const prevBracket = stack[stack.length - 1];
+      // Check for a pair
+      if (rightIndex === left.indexOf(prevBracket)) {
+        stack.pop();
+      } else {
+        return false;
+      }
+    }
+  }
+  // Empty if all brackets were closed
+  return stack.length === 0;
 }
 
 
@@ -403,8 +453,35 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  const dicts = [
+    [],
+    [],
+    [0, 1],
+    [0, 1, 2],
+    [0, 1, 2, 3],
+    [0, 1, 2, 3, 4],
+    [0, 1, 2, 3, 4, 5],
+    [0, 1, 2, 3, 4, 5, 6],
+    [0, 1, 2, 3, 4, 5, 6, 7],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  ];
+  if (n === 10) {
+    return num;
+  }
+  const target = dicts[n];
+  const reminders = [];
+  let x = num;
+  while (x >= n) {
+    const rem = x % n;
+    const temp = x / n;
+    const whole = Math.trunc(temp);
+    reminders.push(target[rem]);
+    x = whole;
+  }
+
+  reminders.push(target[x % n]);
+  return reminders.reverse().join('');
 }
 
 
@@ -477,10 +554,33 @@ function getCommonDirectoryPath(pathes) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getRow(mx, i) {
+  return mx[i];
+}
+function getCol(mx, j) {
+  return mx.map((row) => row[j]);
 }
 
+function rowByCol(row, col) {
+  const v = [];
+  for (let i = 0; i < row.length; i += 1) {
+    v.push(row[i] * col[i]);
+  }
+  return v.reduce((a, x) => a + x, 0);
+}
+
+function getMatrixProduct(m1, m2) {
+  const result = [];
+  for (let i = 0; i < m1.length; i += 1) {
+    result[i] = [];
+    const row = getRow(m1, i);
+    for (let j = 0; j < m2[0].length; j += 1) {
+      const col = getCol(m2, j);
+      result[i][j] = rowByCol(row, col);
+    }
+  }
+  return result;
+}
 
 /**
  * Returns the evaluation of the specified tic-tac-toe position.
@@ -512,8 +612,34 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const match = [
+    // rows
+    [[0, 0], [0, 1], [0, 2]],
+    [[1, 0], [1, 1], [1, 2]],
+    [[2, 0], [2, 1], [2, 2]],
+    // rows
+    [[0, 0], [1, 0], [2, 0]],
+    [[0, 1], [1, 1], [2, 1]],
+    [[0, 2], [1, 2], [2, 2]],
+    // diagonals
+    [[0, 0], [1, 1], [2, 2]],
+    [[0, 2], [1, 1], [2, 0]],
+  ];
+
+  for (let i = 0; i < match.length; i += 1) {
+    const line = match[i].map((m) => position[m[0]][m[1]]);
+    const set = new Set(line);
+    if (set.size === 1) {
+      if (set.has('X')) {
+        return 'X';
+      }
+      if (set.has('0')) {
+        return '0';
+      }
+    }
+  }
+  return undefined;
 }
 
 
