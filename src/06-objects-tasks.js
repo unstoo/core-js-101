@@ -120,33 +120,141 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+function Element() {
+  const flags = {
+    el: false,
+    id: false,
+    class: false,
+    attribute: false,
+    pseudoClass: false,
+    pseudoEl: false,
+  };
+  let string = '';
+  // const order = ['element', 'id', 'class', 'attribute', 'pseudo-class', 'pseudo-element'];
+  // const invoked = [];
+  return {
+    element(el) {
+      if (flags.el === true) {
+        throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+      }
+      if (flags.id || flags.class || flags.attribute || flags.pseudoClass || flags.pseudoEl) {
+        throw Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+      }
+      flags.el = true;
+      string += el;
+      return this;
+    },
+
+    id(value) {
+      if (flags.id === true) {
+        throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+      }
+      if (flags.class || flags.attribute || flags.pseudoClass || flags.pseudoEl) {
+        throw Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+      }
+      flags.id = true;
+      string += `#${value}`;
+      return this;
+    },
+
+    class(value) {
+      if (flags.attribute || flags.pseudoClass || flags.pseudoEl) {
+        throw Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+      }
+      flags.class = true;
+      string += `.${value}`;
+      return this;
+    },
+
+    attr(value) {
+      if (flags.pseudoClass || flags.pseudoEl) {
+        throw Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+      }
+      flags.attribute = true;
+      string += `[${value}]`;
+      return this;
+    },
+
+    pseudoClass(value) {
+      if (flags.pseudoEl) {
+        throw Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+      }
+      flags.pseudoClass = true;
+      string += `:${value}`;
+      return this;
+    },
+
+    pseudoElement(value) {
+      if (flags.pseudoEl === true) {
+        throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+      }
+      flags.pseudoEl = true;
+      string += `::${value}`;
+      return this;
+    },
+
+    stringify() {
+      const temp = string;
+      string = '';
+      return temp;
+    },
+  };
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  string: '',
+
+  element(el) {
+    const selector = new Element();
+    selector.element(el);
+    return selector;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    const selector = new Element();
+    selector.id(value);
+    return selector;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    const selector = new Element();
+    selector.class(value);
+    return selector;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    const selector = new Element();
+    selector.attr(value);
+    return selector;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    const selector = new Element();
+    selector.pseudoClass(value);
+    return selector;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    const selector = new Element();
+    selector.pseudoElement(value);
+    return selector;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  stringify() {
+    const temp = this.string;
+    this.string = '';
+    return temp;
+  },
+
+  combine(selector1, combinator, selector2) {
+    if (this.string === '') {
+      this.string = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    } else {
+      const right = this.string;
+      this.string = `${selector1.stringify()} ${combinator} ${right}`;
+    }
+
+    return this;
   },
 };
 
