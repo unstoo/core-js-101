@@ -28,8 +28,16 @@
  *      .catch((error) => console.log(error.message)) // 'Error: Wrong parameter is passed!
  *                                                    //  Ask her again.';
  */
-function willYouMarryMe(/* isPositiveAnswer */) {
-  throw new Error('Not implemented');
+function willYouMarryMe(bool) {
+  return new Promise((resolve, reject) => {
+    if (bool === true) {
+      setTimeout(() => resolve('Hooray!!! She said "Yes"!'), 0);
+    } else if (bool === false) {
+      setTimeout(() => resolve('Oh no, she said "No".'), 0);
+    } else {
+      setTimeout(() => reject(new Error('Wrong parameter is passed! Ask her again.')), 0);
+    }
+  });
 }
 
 
@@ -48,8 +56,12 @@ function willYouMarryMe(/* isPositiveAnswer */) {
  *    })
  *
  */
-function processAllPromises(/* array */) {
-  throw new Error('Not implemented');
+function processAllPromises(array) {
+  return new Promise((resolve, reject) => {
+    Promise.all(array)
+      .then((values) => resolve(values))
+      .catch((error) => reject(error));
+  });
 }
 
 /**
@@ -71,8 +83,17 @@ function processAllPromises(/* array */) {
  *    })
  *
  */
-function getFastestPromise(/* array */) {
-  throw new Error('Not implemented');
+function getFastestPromise(arr) {
+  return new Promise((resolve, reject) => {
+    Promise.race(arr)
+      .then((values) => resolve(values))
+      .catch((error) => reject(error));
+  });
+  // return new Promise((resolve) => {
+  //   Promise.race(arr).then((value) => {
+  //     resolve(value);
+  //   });
+  // });
 }
 
 /**
@@ -92,8 +113,35 @@ function getFastestPromise(/* array */) {
  *    });
  *
  */
-function chainPromises(/* array, action */) {
-  throw new Error('Not implemented');
+function chainPromises(array, action) {
+  function next(arr, acc, act, resolve) {
+    if (arr.length) {
+      arr.pop()
+        .then((result) => {
+          acc.push(result);
+          next(arr, acc, act, resolve);
+        })
+        .catch((error) => {
+          next(arr, acc, act, resolve);
+          return error;
+        });
+    } else {
+      const result = acc
+        .reverse()
+        .reduce((accum, current, index) => {
+          if (index === 0) {
+            return current;
+          }
+          return act(accum, current);
+        });
+
+      resolve(result);
+    }
+  }
+
+  return new Promise((resolve) => {
+    next(array, [], action, resolve);
+  });
 }
 
 module.exports = {
